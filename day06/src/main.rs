@@ -69,4 +69,15 @@ fn main() {
         population += children_counts[element as usize];
     }
     println!("part 2= {}", population);
+    // let mut iterations = 80;
+    // let mut total = iterations / 7;
+    // let mut children = iterations / 7;
+    // while children != 0 {
+    //     for child in 0..children {
+    //         total += (iterations -2 - (child * 7)) / 7;
+    //     }
+    //     iterations = iterations - ((iterations - 2) / 7);
+    //     children = (iterations - 2) / 7;
+    // }
+    // println!("total = {}", total);
 }
