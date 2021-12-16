@@ -1,7 +1,5 @@
 use std::fs;
 
-const STEPS: usize = 100;
-
 fn index_in_vec((i, j): (usize, usize), cols: usize) -> usize {
     j * cols + i
 }
@@ -60,10 +58,14 @@ fn main() {
         .collect();
     let lines = octos_energy.len() / cols;
     let mut part1 = 0_usize;
+    let mut step = 0_usize;
+    let part2: usize;
 
-    for _ in 0..STEPS {
+    loop {
+        step += 1;
         octos_energy = octos_energy.iter().map(|el| el + 1).collect();
         let mut flashed: Vec<usize> = vec![];
+        let mut step_flashes = 0_usize;
         let nines: Vec<usize> = octos_energy
             .iter()
             .enumerate()
@@ -72,16 +74,18 @@ fn main() {
             .collect::<Vec<usize>>();
         for &idx in nines.iter() {
             if !flashed.contains(&idx) {
-                part1 += flash_wave(idx, cols, lines, &mut octos_energy, &mut flashed);
+                step_flashes += flash_wave(idx, cols, lines, &mut octos_energy, &mut flashed);
             }
         }
-        // println!("step {}:", step + 1);
-        // for j in 0..lines {
-        //     for i in 0..cols {
-        //         print!("{} ", octos_energy[index_in_vec((i, j), cols)]);
-        //     }
-        //     println!();
-        // }
+        if step <= 100 {
+            part1 += step_flashes;
+        }
+        if step_flashes == 100 {
+            part2 = step;
+            break;
+        }
     }
+
     println!("part 1 = {}", part1);
+    println!("part 2 = {}", part2);
 }
