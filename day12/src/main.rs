@@ -27,11 +27,61 @@ fn find_paths_part1(graph: &HashMap<&str, Vec<&str>>, node: &str, visited: Vec<&
     return paths;
 }
 
+fn find_paths_part2(
+    graph: &HashMap<&str, Vec<&str>>,
+    node: &str,
+    visited: Vec<&str>,
+    double: bool,
+) -> usize {
+    if node == "end" {
+        // println!("{:?}", visited);
+        return 1;
+    }
+    let mut paths = 0_usize;
+    let mut children: Vec<&str> = if double {
+        graph[node]
+            .iter()
+            .filter(|val| !visited.contains(val))
+            .cloned()
+            .collect()
+    } else {
+        graph[node]
+            .iter()
+            .filter(|&&val| val != "start")
+            .cloned()
+            .collect()
+    };
+    if children.len() == 0 {
+        return 0;
+    }
+    while children.len() > 0 {
+        let child = children.pop().unwrap();
+        if child.chars().all(char::is_lowercase) {
+            if double {
+                let new_visited: Vec<&str> =
+                    visited.iter().cloned().chain(iter::once(child)).collect();
+                paths += find_paths_part2(graph, child, new_visited, double);
+            } else if visited.contains(&child) {
+                paths += find_paths_part2(graph, child, visited.clone(), true);
+            } else {
+                let new_visited: Vec<&str> =
+                    visited.iter().cloned().chain(iter::once(child)).collect();
+                paths += find_paths_part2(graph, child, new_visited, double);
+            }
+        } else {
+            paths += find_paths_part2(graph, child, visited.clone(), double);
+        }
+    }
+
+    return paths;
+}
+
 fn main() {
     // let raw_input = fs::read_to_string("sample1.txt").expect("could not read file");
     // let raw_input = fs::read_to_string("sample2.txt").expect("could not read file");
     // let raw_input = fs::read_to_string("sample3.txt").expect("could not read file");
     let raw_input = fs::read_to_string("input.txt").expect("could not read file");
+
     let mut graph: HashMap<&str, Vec<&str>> = HashMap::new();
     for line in raw_input.lines() {
         let mut line_iter = line.split('-');
@@ -43,7 +93,9 @@ fn main() {
         (*entry2).push(key);
     }
 
-    let paths = find_paths_part1(&graph, "start", vec!["start"]);
+    let part1 = find_paths_part1(&graph, "start", vec!["start"]);
+    println!("part 1 = {}", part1);
 
-    println!("part 1 = {}", paths);
+    let part2 = find_paths_part2(&graph, "start", vec!["start"], false);
+    println!("part 2 = {}", &part2);
 }
